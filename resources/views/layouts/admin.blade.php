@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -103,12 +104,12 @@
                                     </a>
                                     <ul class="sub-menu">
                                         <li class="sub-menu-item">
-                                            <a href="add-category.html" class="">
+                                            <a href="{{ route('admin.category.add') }}" class="">
                                                 <div class="text">New Category</div>
                                             </a>
                                         </li>
                                         <li class="sub-menu-item">
-                                            <a href="categories.html" class="">
+                                            <a href="{{route('admin.categories')}}" class="">
                                                 <div class="text">Categories</div>
                                             </a>
                                         </li>
@@ -163,10 +164,11 @@
                                 <li class="menu-item">
                                     <form method="POST" action="{{route('logout')}}" id="logout-form">
                                         @csrf
-                                    <a href="{{route('logout')}}" class="" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
-                                        <div class="icon"><i class="icon-settings"></i></div>
-                                        <div class="text">Logout</div>
-                                    </a>
+                                        <a href="{{route('logout')}}" class=""
+                                            onclick="event.preventDefault();document.getElementById('logout-form').submit();">
+                                            <div class="icon"><i class="icon-settings"></i></div>
+                                            <div class="text">Logout</div>
+                                        </a>
                                 </li>
                             </ul>
                         </div>
@@ -456,7 +458,7 @@
                         @yield('content')
 
                         <div class="bottom-page">
-                            <div class="body-text">Copyright © 2024 Hachi & Lota</div>
+                            <div class="body-text">Copyright © 2025 Hachi & Lota</div>
                         </div>
                     </div>
 
@@ -467,8 +469,8 @@
 
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('js/bootstrap-select.min.js') }}"></script>   
-    <script src="{{ asset('js/sweetalert.min.js') }}"></script>    
+    <script src="{{ asset('js/bootstrap-select.min.js') }}"></script>
+    <script src="{{ asset('js/sweetalert.min.js') }}"></script>
     <script src="{{ asset('js/apexcharts/apexcharts.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>
     <script>
@@ -571,4 +573,5 @@
     </script>
     @stack("scripts")
 </body>
+
 </html>
