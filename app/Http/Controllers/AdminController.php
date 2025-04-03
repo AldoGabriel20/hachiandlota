@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Coupon;
 use App\Models\Slide;
 use App\Models\Contact;
+use App\Models\Setting;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
@@ -482,5 +483,51 @@ class AdminController extends Controller
         $contact = Contact::find($id);
         $contact->delete();
         return redirect()->route('admin.contacts')->with('status', 'Contact has been deleted successfully!');
+    }
+
+    public function settings()
+    {
+        // at this moment, settings table only have one data 
+        $setting = Setting::first();
+        return view('admin.settings', compact('setting'));
+    }
+
+    public function setting_update(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'phone' => 'required|numeric|regex:/^[0-9]{10,12}$/',
+            'address' => 'required'
+        ]);
+
+        // at this moment, settings table only have one data 
+        $setting = Setting::first();
+        if ($setting) {
+            $setting->email = $request->email;
+            $setting->phone = $request->phone;
+            $setting->phone_second = $request->phone_second;
+            $setting->address = $request->address;
+            $setting->map = $request->map;
+            $setting->twitter = $request->twitter;
+            $setting->instagram = $request->instagram;
+            $setting->youtube = $request->youtube;
+            $setting->pinterest = $request->pinterest;
+            $setting->facebook = $request->facebook;
+        } else {
+            $setting = new Setting();
+            $setting->email = $request->email;
+            $setting->phone = $request->phone;
+            $setting->phone_second = $request->phone_second;
+            $setting->address = $request->address;
+            $setting->map = $request->map;
+            $setting->twitter = $request->twitter;
+            $setting->instagram = $request->instagram;
+            $setting->youtube = $request->youtube;
+            $setting->pinterest = $request->pinterest;
+            $setting->facebook = $request->facebook;
+        }
+
+        $setting->save();
+        return redirect()->route('admin.settings')->with('status', 'Setting has been updated successfully!');
     }
 }
