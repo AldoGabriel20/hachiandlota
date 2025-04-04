@@ -1,5 +1,10 @@
 @extends('layouts.app')
 @section('content')
+    <style>
+        .text-success {
+            color: #278c04 !important;
+        }
+    </style>
     <main class="pt-90">
         <div class="mb-4 pb-4"></div>
         <section class="shop-checkout container">
@@ -105,8 +110,10 @@
                             </tbody>
                         </table>
                         <div class="cart-table-footer">
-                            <form action="#" class="position-relative bg-body">
-                                <input class="form-control" type="text" name="coupon_code" placeholder="Coupon Code">
+                            <form action="{{ route('cart.coupon.apply') }}" method="POST" class="position-relative bg-body">
+                                @csrf
+                                <input class="form-control" type="text" name="coupon_code" placeholder="Coupon Code"
+                                    value="@if(Session::has('success')) {{ Session::get('coupon')['code'] }} Applied! @endif">
                                 <input class="btn-link fw-medium position-absolute top-0 end-0 h-100 px-4" type="submit"
                                     value="APPLY COUPON">
                             </form>
@@ -116,51 +123,109 @@
                                 <button class="btn btn-light" type="submit">CLEAR CART</button>
                             </form>
                         </div>
+                        <div>
+                            @if (Session::has('success'))
+                                <p class="text-success">{{ Session::get('success') }}</p>
+                            @elseif (Session::has(key: 'error'))
+                                <p class="text-danger">{{ Session::get('error') }}</p>
+                            @endif
+                        </div>
                     </div>
                     <div class="shopping-cart__totals-wrapper">
                         <div class="sticky-content">
                             <div class="shopping-cart__totals">
                                 <h3>Cart Totals</h3>
-                                <table class="cart-totals">
-                                    <tbody>
-                                        <tr>
-                                            <th>Subtotal</th>
-                                            <td>Rp. {{ Cart::instance('cart')->subtotal() }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Shipping</th>
-                                            <td>Free
-                                                <!-- <div class="form-check">
-                                                                                                                                                                                    <input class="form-check-input form-check-input_fill" type="checkbox"
-                                                                                                                                                                                        value="" id="free_shipping">
-                                                                                                                                                                                    <label class="form-check-label" for="free_shipping">Free shipping</label>
-                                                                                                                                                                                </div>
-                                                                                                                                                                                <div class="form-check">
-                                                                                                                                                                                    <input class="form-check-input form-check-input_fill" type="checkbox"
-                                                                                                                                                                                        value="" id="flat_rate">
-                                                                                                                                                                                    <label class="form-check-label" for="flat_rate">Flat rate: $49</label>
-                                                                                                                                                                                </div>
-                                                                                                                                                                                <div class="form-check">
-                                                                                                                                                                                    <input class="form-check-input form-check-input_fill" type="checkbox"
-                                                                                                                                                                                        value="" id="local_pickup">
-                                                                                                                                                                                    <label class="form-check-label" for="local_pickup">Local pickup: $8</label>
-                                                                                                                                                                                </div>
-                                                                                                                                                                                <div>Shipping to AL.</div>
-                                                                                                                                                                                <div>
-                                                                                                                                                                                    <a href="#" class="menu-link menu-link_us-s">CHANGE ADDRESS</a>
-                                                                                                                                                                                </div> -->
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>VAT</th>
-                                            <td>Rp. {{ Cart::instance('cart')->tax() }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Total</th>
-                                            <td>Rp. {{ Cart::instance('cart')->total() }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                @if (Session::has('discounts') && (Session::has('success')))
+                                    <table class="cart-totals">
+                                        <tbody>
+                                            <tr>
+                                                <th>Subtotal</th>
+                                                <td>Rp. {{ Cart::instance('cart')->subtotal() }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Discount {{ Session::get('coupon')['code'] }}</th>
+                                                <td>Rp. {{ Session::get('discounts')['discount'] }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Subtotal After Discount</th>
+                                                <td>Rp. {{ Session::get('discounts')['subtotal'] }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Shipping</th>
+                                                <td>Free
+                                                    <!-- <div class="form-check">
+                                                                                                                                                                                                                                                                                                                                                                                <input class="form-check-input form-check-input_fill" type="checkbox"
+                                                                                                                                                                                                                                                                                                                                                                                    value="" id="free_shipping">
+                                                                                                                                                                                                                                                                                                                                                                                <label class="form-check-label" for="free_shipping">Free shipping</label>
+                                                                                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                                                                                            <div class="form-check">
+                                                                                                                                                                                                                                                                                                                                                                                <input class="form-check-input form-check-input_fill" type="checkbox"
+                                                                                                                                                                                                                                                                                                                                                                                    value="" id="flat_rate">
+                                                                                                                                                                                                                                                                                                                                                                                <label class="form-check-label" for="flat_rate">Flat rate: $49</label>
+                                                                                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                                                                                            <div class="form-check">
+                                                                                                                                                                                                                                                                                                                                                                                <input class="form-check-input form-check-input_fill" type="checkbox"
+                                                                                                                                                                                                                                                                                                                                                                                    value="" id="local_pickup">
+                                                                                                                                                                                                                                                                                                                                                                                <label class="form-check-label" for="local_pickup">Local pickup: $8</label>
+                                                                                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                                                                                            <div>Shipping to AL.</div>
+                                                                                                                                                                                                                                                                                                                                                                            <div>
+                                                                                                                                                                                                                                                                                                                                                                                <a href="#" class="menu-link menu-link_us-s">CHANGE ADDRESS</a>
+                                                                                                                                                                                                                                                                                                                                                                            </div> -->
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>VAT</th>
+                                                <td>Rp. {{ Session::get('discounts')['tax'] }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Total</th>
+                                                <td>Rp. {{ Session::get('discounts')['total'] }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <table class="cart-totals">
+                                        <tbody>
+                                            <tr>
+                                                <th>Subtotal</th>
+                                                <td>Rp. {{ Cart::instance('cart')->subtotal() }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Shipping</th>
+                                                <td>Free
+                                                    <!-- <div class="form-check">
+                                                                                                                                                                                                                                                                                                                                                                                <input class="form-check-input form-check-input_fill" type="checkbox"
+                                                                                                                                                                                                                                                                                                                                                                                    value="" id="free_shipping">
+                                                                                                                                                                                                                                                                                                                                                                                <label class="form-check-label" for="free_shipping">Free shipping</label>
+                                                                                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                                                                                            <div class="form-check">
+                                                                                                                                                                                                                                                                                                                                                                                <input class="form-check-input form-check-input_fill" type="checkbox"
+                                                                                                                                                                                                                                                                                                                                                                                    value="" id="flat_rate">
+                                                                                                                                                                                                                                                                                                                                                                                <label class="form-check-label" for="flat_rate">Flat rate: $49</label>
+                                                                                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                                                                                            <div class="form-check">
+                                                                                                                                                                                                                                                                                                                                                                                <input class="form-check-input form-check-input_fill" type="checkbox"
+                                                                                                                                                                                                                                                                                                                                                                                    value="" id="local_pickup">
+                                                                                                                                                                                                                                                                                                                                                                                <label class="form-check-label" for="local_pickup">Local pickup: $8</label>
+                                                                                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                                                                                            <div>Shipping to AL.</div>
+                                                                                                                                                                                                                                                                                                                                                                            <div>
+                                                                                                                                                                                                                                                                                                                                                                                <a href="#" class="menu-link menu-link_us-s">CHANGE ADDRESS</a>
+                                                                                                                                                                                                                                                                                                                                                                            </div> -->
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>VAT</th>
+                                                <td>Rp. {{ Cart::instance('cart')->tax() }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Total</th>
+                                                <td>Rp. {{ Cart::instance('cart')->total() }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                @endif
                             </div>
                             <div class="mobile_fixed-btn_wrapper">
                                 <div class="button-wrapper container">
