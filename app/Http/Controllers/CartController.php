@@ -27,7 +27,7 @@ class CartController extends Controller
         $product = Cart::instance('cart')->get($rowId);
         $qty = $product->qty + 1;
         Cart::instance('cart')->update($rowId, $qty);
-        return redirect()->back();
+        return redirect()->back()->with('isRefresh', true);
     }
 
     public function decrease_cart_quantity($rowId)
@@ -35,7 +35,7 @@ class CartController extends Controller
         $product = Cart::instance('cart')->get($rowId);
         $qty = $product->qty - 1;
         Cart::instance('cart')->update($rowId, $qty);
-        return redirect()->back();
+        return redirect()->back()->with('isRefresh', true);
     }
 
     public function remove_item($rowId)
@@ -97,5 +97,12 @@ class CartController extends Controller
                 'total' => number_format(floatval($totalAfterDiscount), 2, '.', '')
             ]);
         }
+    }
+
+    public function remove_coupon_code()
+    {
+        Session::forget('coupon');
+        Session::forget('discounts');
+        return back()->with('success', 'Coupon has been removed!');
     }
 }
