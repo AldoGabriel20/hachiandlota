@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Coupon;
 use App\Models\Slide;
 use App\Models\Contact;
 use App\Models\Setting;
+use App\Models\Order;
+use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
@@ -529,5 +532,19 @@ class AdminController extends Controller
 
         $setting->save();
         return redirect()->route('admin.settings')->with('status', 'Setting has been updated successfully!');
+    }
+
+    public function orders()
+    {
+        $orders = Order::orderBy('created_at', 'DESC')->paginate(12);
+        return view('admin.orders', compact('orders'));
+    }
+
+    public function order_details($order_id)
+    {
+        $order = Order::find($order_id);
+        $orderItems = OrderItem::where('order_id', $order_id)->orderBy('id')->paginate(12);
+        $transaction = Transaction::where('order_id', $order_id)->first();
+        return view('admin.order-details', compact('order', 'orderItems', 'transaction'));
     }
 }

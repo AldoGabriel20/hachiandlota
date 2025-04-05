@@ -123,7 +123,7 @@
                                     </a>
                                     <ul class="sub-menu">
                                         <li class="sub-menu-item">
-                                            <a href="orders.html" class="">
+                                            <a href="{{ route('admin.orders') }}" class="">
                                                 <div class="text">Orders</div>
                                             </a>
                                         </li>
@@ -465,7 +465,7 @@
                         @yield('content')
 
                         <div class="bottom-page">
-                            <div class="body-text">Copyright © 2025 Hachi & Lota</div>
+                            <div class="body-text">2025 - Hachi & Lota</div>
                         </div>
                     </div>
 
