@@ -62,7 +62,15 @@
                                         <td class="text-center">Rp. {{ $order->tax }}</td>
                                         <td class="text-center">Rp. {{ $order->total }}</td>
 
-                                        <td class="text-center">{{ $order->status }}</td>
+                                        <td class="text-center">
+                                            @if($order->status == 'delivered')
+                                                <span class="badge bg-success">Delivered</span>
+                                            @elseif($order->status == 'cancelled')
+                                                <span class="badge bg-danger">Cancelled</span>
+                                            @else
+                                                <span class="badge bg-warning">Ordered</span>
+                                            @endif
+                                        </td>
                                         <td class="text-center">
                                             {{ \Carbon\Carbon::parse($order->created_at)->timezone('Asia/Bangkok') }}</td>
                                         <td class="text-center">{{ $order->orderItems->count() }}</td>
