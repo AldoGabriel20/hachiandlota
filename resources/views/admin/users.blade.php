@@ -53,17 +53,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($users as $user)
+                                @foreach ($selected_users as $selected_user)
                                     <tr>
-                                        <td>{{ $user->id }}</td>
-                                        <td class="pname">{{ $user->name }}</td>
-                                        <td>{{ $user->utype }}</td>
-                                        <td>{{$user->mobile}}</td>
-                                        <td>{{ $user->email }}</td>
-                                        <td class="text-center">{{ $user->orders_count }}</td>
+                                        <td>{{ $selected_user->id }}</td>
+                                        <td class="pname">{{ $selected_user->name }}</td>
+                                        <td>{{ $selected_user->utype }}</td>
+                                        <td>{{$selected_user->mobile}}</td>
+                                        <td>{{ $selected_user->email }}</td>
+                                        <td class="text-center">{{ $selected_user->orders_count }}</td>
                                         <td>
                                             <div class="list-icon-function">
-                                                <a href="{{ route('admin.user.edit', ['id' => $user->id]) }}">
+                                                <a href="{{ route('admin.user.edit', ['id' => $selected_user->id]) }}">
                                                     <div class="item edit">
                                                         <i class="icon-edit-3"></i>
                                                     </div>
@@ -79,26 +79,9 @@
                 </div>
                 <div class="divider"></div>
                 <div class="flex items-center justify-between flex-wrap gap10 wgp-pagination">
-                    {{ $users->links('pagination::bootstrap-5') }}
+                    {{ $selected_users->links('pagination::bootstrap-5') }}
                 </div>
             </div>
         </div>
     </div>
 @endsection
-
-@push('styles')
-    <style>
-        /* Style untuk kolom yang tidak dapat diedit */
-        input[readonly],
-        select[readonly] {
-            background-color: rgb(26, 25, 25);
-            /* Warna latar belakang abu-abu */
-            color: #888;
-            /* Warna teks abu-abu */
-            border-color: #dcdcdc;
-            /* Border abu-abu */
-            pointer-events: none;
-            /* Menonaktifkan interaksi dengan input */
-        }
-    </style>
-@endpush

@@ -635,8 +635,8 @@ class AdminController extends Controller
     public function users()
     {
         $user = Auth::user();
-        $users = User::withCount('orders')->orderBy('created_at', 'ASC')->paginate(12);
-        return view('admin.users', compact('users', 'user'));
+        $selected_users = User::withCount('orders')->orderBy('created_at', 'ASC')->paginate(12);
+        return view('admin.users', compact('selected_users', 'user'));
     }
 
     public function user_edit($id)
