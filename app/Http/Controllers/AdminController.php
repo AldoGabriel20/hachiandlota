@@ -10,11 +10,13 @@ use App\Models\Slide;
 use App\Models\Contact;
 use App\Models\Setting;
 use App\Models\Order;
+use App\Models\User;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Intervention\Image\Laravel\Facades\Image;
 
@@ -22,6 +24,8 @@ class AdminController extends Controller
 {
     public function index()
     {
+        $user = Auth::user();
+
         $orders = Order::orderBy("created_at", "DESC")->get()->take(10);
         $dashboardDatas = DB::select("Select sum(total) As TotalAmount,
                                 sum(if(status='ordered',total,0)) As TotalOrderedAmount,
@@ -58,18 +62,20 @@ class AdminController extends Controller
         $TotalDeliveredAmount = collect($monthlyDatas)->sum('TotalDeliveredAmount');
         $TotalCancelledAmount = collect($monthlyDatas)->sum('TotalCancelledAmount');
 
-        return view('admin.index', compact('orders', 'dashboardDatas', 'AmountM', 'OrderedAmountM', 'DeliveredAmountM', 'CancelledAmountM', 'TotalAmount', 'TotalOrderedAmount', 'TotalDeliveredAmount', 'TotalCancelledAmount'));
+        return view('admin.index', compact('user', 'orders', 'dashboardDatas', 'AmountM', 'OrderedAmountM', 'DeliveredAmountM', 'CancelledAmountM', 'TotalAmount', 'TotalOrderedAmount', 'TotalDeliveredAmount', 'TotalCancelledAmount'));
     }
 
     public function categories()
     {
+        $user = Auth::user();
         $categories = Category::orderBy('id', 'DESC')->paginate(10);
-        return view('admin.categories', compact('categories'));
+        return view('admin.categories', compact('categories', 'user'));
     }
 
     public function category_add()
     {
-        return view('admin.category-add');
+        $user = Auth::user();
+        return view('admin.category-add', compact('user'));
     }
 
     public function category_store(Request $request)
@@ -104,8 +110,9 @@ class AdminController extends Controller
 
     public function category_edit($id)
     {
+        $user = Auth::user();
         $category = Category::find($id);
-        return view('admin.category-edit', compact('category'));
+        return view('admin.category-edit', compact('category', 'user'));
     }
 
     public function category_update(Request $request)
@@ -146,14 +153,16 @@ class AdminController extends Controller
 
     public function products()
     {
+        $user = Auth::user();
         $products = Product::orderBy('created_at', 'DESC')->paginate(10);
-        return view('admin.products', compact('products'));
+        return view('admin.products', compact('products', 'user'));
     }
 
     public function product_add()
     {
+        $user = Auth::user();
         $categories = Category::select('id', 'name')->orderBy('name')->get();
-        return view('admin.product-add', compact('categories'));
+        return view('admin.product-add', compact('categories', 'user'));
     }
 
     public function product_store(Request $request)
@@ -241,9 +250,10 @@ class AdminController extends Controller
 
     public function product_edit($id)
     {
+        $user = Auth::user();
         $product = Product::find($id);
         $categories = Category::select('id', 'name')->orderBy('name')->get();
-        return view('admin.product-edit', compact('product', 'categories'));
+        return view('admin.product-edit', compact('product', 'categories', 'user'));
     }
 
     public function product_update(Request $request)
@@ -352,13 +362,15 @@ class AdminController extends Controller
 
     public function coupons()
     {
+        $user = Auth::user();
         $coupons = Coupon::orderBy('expiry_date', 'DESC')->paginate(12);
-        return view('admin.coupons', compact('coupons'));
+        return view('admin.coupons', compact('coupons', 'user'));
     }
 
     public function coupon_add()
     {
-        return view('admin.coupon-add');
+        $user = Auth::user();
+        return view('admin.coupon-add', compact('user'));
     }
 
     public function coupon_store(Request $request)
@@ -383,8 +395,9 @@ class AdminController extends Controller
 
     public function coupon_edit($id)
     {
+        $user = Auth::user();
         $coupon = Coupon::find($id);
-        return view('admin.coupon-edit', compact('coupon'));
+        return view('admin.coupon-edit', compact('coupon', 'user'));
     }
 
     public function coupon_update(Request $request)
@@ -416,13 +429,15 @@ class AdminController extends Controller
 
     public function slides()
     {
+        $user = Auth::user();
         $slides = Slide::orderBy('id', 'DESC')->paginate(12);
-        return view('admin.slides', compact('slides'));
+        return view('admin.slides', compact('slides', 'user'));
     }
 
     public function slide_add()
     {
-        return view('admin.slide-add');
+        $user = Auth::user();
+        return view('admin.slide-add', compact('user'));
     }
 
     public function slide_store(Request $request)
@@ -464,8 +479,9 @@ class AdminController extends Controller
 
     public function slide_edit($id)
     {
+        $user = Auth::user();
         $slide = Slide::find($id);
-        return view('admin.slide-edit', compact('slide'));
+        return view('admin.slide-edit', compact('slide', 'user'));
     }
 
     public function slide_update(Request $request)
@@ -514,8 +530,9 @@ class AdminController extends Controller
 
     public function contacts()
     {
+        $user = Auth::user();
         $contacts = Contact::orderBy('created_at', 'DESC')->paginate(10);
-        return view('admin.contacts', compact('contacts'));
+        return view('admin.contacts', compact('contacts', 'user'));
     }
 
     public function contact_delete($id)
@@ -527,9 +544,10 @@ class AdminController extends Controller
 
     public function settings()
     {
-        // at this moment, settings table only have one data 
+        // at this moment, settings table only have one data
+        $user = Auth::user();
         $setting = Setting::first();
-        return view('admin.settings', compact('setting'));
+        return view('admin.settings', compact('setting', 'user'));
     }
 
     public function setting_update(Request $request)
@@ -573,16 +591,18 @@ class AdminController extends Controller
 
     public function orders()
     {
+        $user = Auth::user();
         $orders = Order::orderBy('created_at', 'DESC')->paginate(12);
-        return view('admin.orders', compact('orders'));
+        return view('admin.orders', compact('orders', 'user'));
     }
 
     public function order_details($order_id)
     {
+        $user = Auth::user();
         $order = Order::find($order_id);
         $orderItems = OrderItem::where('order_id', $order_id)->orderBy('id')->paginate(12);
         $transaction = Transaction::where('order_id', $order_id)->first();
-        return view('admin.order-details', compact('order', 'orderItems', 'transaction'));
+        return view('admin.order-details', compact('order', 'orderItems', 'transaction', 'user'));
     }
 
     public function update_order_status(Request $request)
@@ -603,5 +623,43 @@ class AdminController extends Controller
         }
 
         return back()->with('status', 'Status changed successfully!');
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $results = Product::where('name', 'LIKE', "%{$query}%")->get()->take(8);
+        return response()->json($results);
+    }
+
+    public function users()
+    {
+        $user = Auth::user();
+        $users = User::withCount('orders')->orderBy('created_at', 'ASC')->paginate(12);
+        return view('admin.users', compact('users', 'user'));
+    }
+
+    public function user_edit($id)
+    {
+        $user = Auth::user();
+        $selected_user = User::find($id);
+        return view('admin.user-edit', compact('selected_user', 'user'));
+    }
+
+    public function user_update_role(Request $request)
+    {
+        $request->validate([
+            'utype' => 'required|in:ADM,USR'
+        ]);
+
+        $user = User::find($request->id);
+        if ($user) {
+            $user->utype = $request->utype;
+            $user->save();
+
+            return redirect()->route('admin.users')->with('status', 'User updated successfully!');
+        }
+
+        return redirect()->route('admin.users')->with('failed', 'User not found!');
     }
 }

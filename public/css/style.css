@@ -2650,6 +2650,7 @@ a:hover, a:focus {
 }
 .header .header-inner .header-inner-wrap .header-left {
   padding-left: 5px;
+  overflow: visible;
 }
 .header .header-inner .header-inner-wrap .header-right {
   display: -webkit-box;
