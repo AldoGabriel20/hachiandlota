@@ -25,7 +25,7 @@
                     enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
-                    <input type="hidden" name="id" value="{{ $user->id }}" />
+                    <input type="hidden" name="id" value="{{ $selected_user->id }}" />
                     <fieldset class="name">
                         <div class="body-title">Username</div>
                         <input class="flex-grow" type="text" placeholder="Name" name="name" tabindex="0"

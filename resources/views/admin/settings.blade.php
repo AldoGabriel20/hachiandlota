@@ -19,78 +19,94 @@
                 </ul>
             </div>
             <div class="wg-box">
-                <form class="form-new-product form-style-1" method="POST" action="{{ route('admin.setting.update') }}">
-                    @if(Session::has('status'))
-                        <p class="alert alert-success">{{ Session::get('status') }}</p>
-                    @endif
-                    @csrf
-                    @method('PUT')
-                    <fieldset class="name">
-                        <div class="body-title">Email <span class="tf-color-1">*</span></div>
-                        <input class="flex-grow" type="text" placeholder="Email" name="email" tabindex="0"
-                            value="{{ old('email', $setting?->email) }}" aria-required="true" required="">
-                    </fieldset>
-                    @error('email') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
-                    <fieldset class="name">
-                        <div class="body-title">Phone <span class="tf-color-1">*</span></div>
-                        <input class="flex-grow" type="text" placeholder="Phone" name="phone" tabindex="0"
-                            value="{{ old('phone', $setting?->phone) }}" aria-required="true" required="">
-                    </fieldset>
-                    @error('phone') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
-                    <fieldset class="name">
-                        <div class="body-title">Phone Second</div>
-                        <input class="flex-grow" type="text" placeholder="Phone Second" name="phone_second" tabindex="0"
-                            value="{{ old('phone_second', $setting?->phone_second) }}">
-                    </fieldset>
-                    @error('phone_second') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
-                    <fieldset class="name">
-                        <div class="body-title">Address <span class="tf-color-1">*</span></div>
-                        <input class="flex-grow" type="text" placeholder="Address" name="address" tabindex="0"
-                            value="{{ old('address', $setting?->address) }}" aria-required="true" required="">
-                    </fieldset>
-                    @error('address') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
-                    <fieldset class="name">
-                        <div class="body-title">Map</div>
-                        <input class="flex-grow" type="text" placeholder="Map" name="map" tabindex="0"
-                            value="{{ old('map', $setting?->map) }}">
-                    </fieldset>
-                    @error('map') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
-                    <fieldset class="name">
-                        <div class="body-title">Twitter</div>
-                        <input class="flex-grow" type="text" placeholder="Twitter" name="twitter" tabindex="0"
-                            value="{{ old('twitter', $setting?->twitter) }}">
-                    </fieldset>
-                    @error('twitter') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
-                    <fieldset class="name">
-                        <div class="body-title">Instagram</div>
-                        <input class="flex-grow" type="text" placeholder="Instagram" name="instagram" tabindex="0"
-                            value="{{ old('instagram', $setting?->instagram) }}">
-                    </fieldset>
-                    @error('instagram') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
-                    <fieldset class="name">
-                        <div class="body-title">Youtube</div>
-                        <input class="flex-grow" type="text" placeholder="Youtube" name="youtube" tabindex="0"
-                            value="{{ old('youtube', $setting?->youtube) }}">
-                    </fieldset>
-                    @error('youtube') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
-                    <fieldset class="name">
-                        <div class="body-title">Pinterest</div>
-                        <input class="flex-grow" type="text" placeholder="Pinterest" name="pinterest" tabindex="0"
-                            value="{{ old('pinterest', $setting?->pinterest) }}">
-                    </fieldset>
-                    @error('pinterest') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
-                    <fieldset class="name">
-                        <div class="body-title">Facebook</div>
-                        <input class="flex-grow" type="text" placeholder="Facebook" name="facebook" tabindex="0"
-                            value="{{ old('facebook', $setting?->facebook) }}">
-                    </fieldset>
-                    @error('facebook') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
+                <div class="col-lg-12">
+                    <div class="page-content my-account__edit">
+                        <div class="my-account__edit-form">
+                            <form name="account_edit_form" action="{{ route('admin.setting.update') }}" method="POST"
+                                class="form-new-product form-style-1 needs-validation" novalidate="">
+                                @if(Session::has('status'))
+                                    <p class="alert alert-success">{{ Session::get('status') }}</p>
+                                @endif
+                                @csrf
+                                @method('PUT')
 
-                    <div class="bot">
-                        <div></div>
-                        <button class="tf-button w208" type="submit">Save</button>
+                                <fieldset class="name">
+                                    <div class="body-title">Name <span class="tf-color-1">*</span>
+                                    </div>
+                                    <input class="flex-grow" type="text" placeholder="Full Name" name="name" tabindex="0"
+                                        value="{{ old('name', $selected_user?->name) }}" aria-required="true" required="">
+                                </fieldset>
+                                @error('name') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
+
+                                <fieldset class="name">
+                                    <div class="body-title">Mobile Number <span class="tf-color-1">*</span></div>
+                                    <input class="flex-grow" type="text" placeholder="Mobile Number" name="mobile"
+                                        tabindex="0" value="{{ old('mobile', $selected_user?->mobile) }}"
+                                        aria-required="true" required="">
+                                </fieldset>
+                                @error('mobile') <span class="alert alert-danger text-center">{{ $message }}</span>
+                                @enderror
+
+                                <fieldset class="name">
+                                    <div class="body-title">Email Address <span class="tf-color-1">*</span></div>
+                                    <input class="flex-grow" type="text" placeholder="Email Address" name="email"
+                                        tabindex="0" value="{{ old('email', $selected_user?->phone) }}" aria-required="true"
+                                        required="">
+                                </fieldset>
+                                @error('email') <span class="alert alert-danger text-center">{{ $message }}</span> @enderror
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="my-3">
+                                            <h5 class="text-uppercase mb-0">Password Change</h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <fieldset class="name">
+                                            <div class="body-title pb-3">Old password <span class="tf-color-1">*</span>
+                                            </div>
+                                            <input class="flex-grow" type="password" placeholder="Old password"
+                                                id="old_password" name="old_password" aria-required="true" required="">
+                                        </fieldset>
+                                        @error('old_password') <span
+                                        class="alert alert-danger text-center">{{ $message }}</span> @enderror
+
+                                    </div>
+                                    <div class="col-md-12">
+                                        <fieldset class="name">
+                                            <div class="body-title pb-3">New password <span class="tf-color-1">*</span>
+                                            </div>
+                                            <input class="flex-grow" type="password" placeholder="New password"
+                                                id="new_password" name="new_password" aria-required="true" required="">
+                                        </fieldset>
+                                        @error('new_password') <span
+                                        class="alert alert-danger text-center">{{ $message }}</span> @enderror
+
+                                    </div>
+                                    <div class="col-md-12">
+                                        <fieldset class="name">
+                                            <div class="body-title pb-3">Confirm new password <span
+                                                    class="tf-color-1">*</span></div>
+                                            <input class="flex-grow" type="password" placeholder="Confirm new password"
+                                                cfpwd="" data-cf-pwd="#new_password" id="new_password_confirmation"
+                                                name="new_password_confirmation" aria-required="true" required="">
+                                            <div class="invalid-feedback">Passwords did not match!
+                                            </div>
+                                        </fieldset>
+                                        @error('new_password_confirmation') <span
+                                        class="alert alert-danger text-center">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="my-3">
+                                            <button type="submit" class="btn btn-primary tf-button w208">Save
+                                                Changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>

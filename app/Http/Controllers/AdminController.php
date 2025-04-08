@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Intervention\Image\Laravel\Facades\Image;
 
@@ -24,8 +25,6 @@ class AdminController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-
         $orders = Order::orderBy("created_at", "DESC")->get()->take(10);
         $dashboardDatas = DB::select("Select sum(total) As TotalAmount,
                                 sum(if(status='ordered',total,0)) As TotalOrderedAmount,
@@ -62,20 +61,18 @@ class AdminController extends Controller
         $TotalDeliveredAmount = collect($monthlyDatas)->sum('TotalDeliveredAmount');
         $TotalCancelledAmount = collect($monthlyDatas)->sum('TotalCancelledAmount');
 
-        return view('admin.index', compact('user', 'orders', 'dashboardDatas', 'AmountM', 'OrderedAmountM', 'DeliveredAmountM', 'CancelledAmountM', 'TotalAmount', 'TotalOrderedAmount', 'TotalDeliveredAmount', 'TotalCancelledAmount'));
+        return view('admin.index', compact('orders', 'dashboardDatas', 'AmountM', 'OrderedAmountM', 'DeliveredAmountM', 'CancelledAmountM', 'TotalAmount', 'TotalOrderedAmount', 'TotalDeliveredAmount', 'TotalCancelledAmount'));
     }
 
     public function categories()
     {
-        $user = Auth::user();
         $categories = Category::orderBy('id', 'DESC')->paginate(10);
-        return view('admin.categories', compact('categories', 'user'));
+        return view('admin.categories', compact('categories'));
     }
 
     public function category_add()
     {
-        $user = Auth::user();
-        return view('admin.category-add', compact('user'));
+        return view('admin.category-add');
     }
 
     public function category_store(Request $request)
@@ -110,9 +107,8 @@ class AdminController extends Controller
 
     public function category_edit($id)
     {
-        $user = Auth::user();
         $category = Category::find($id);
-        return view('admin.category-edit', compact('category', 'user'));
+        return view('admin.category-edit', compact('category'));
     }
 
     public function category_update(Request $request)
@@ -153,16 +149,14 @@ class AdminController extends Controller
 
     public function products()
     {
-        $user = Auth::user();
         $products = Product::orderBy('created_at', 'DESC')->paginate(10);
-        return view('admin.products', compact('products', 'user'));
+        return view('admin.products', compact('products'));
     }
 
     public function product_add()
     {
-        $user = Auth::user();
         $categories = Category::select('id', 'name')->orderBy('name')->get();
-        return view('admin.product-add', compact('categories', 'user'));
+        return view('admin.product-add', compact('categories'));
     }
 
     public function product_store(Request $request)
@@ -250,10 +244,9 @@ class AdminController extends Controller
 
     public function product_edit($id)
     {
-        $user = Auth::user();
         $product = Product::find($id);
         $categories = Category::select('id', 'name')->orderBy('name')->get();
-        return view('admin.product-edit', compact('product', 'categories', 'user'));
+        return view('admin.product-edit', compact('product', 'categories'));
     }
 
     public function product_update(Request $request)
@@ -362,15 +355,13 @@ class AdminController extends Controller
 
     public function coupons()
     {
-        $user = Auth::user();
         $coupons = Coupon::orderBy('expiry_date', 'DESC')->paginate(12);
-        return view('admin.coupons', compact('coupons', 'user'));
+        return view('admin.coupons', compact('coupons'));
     }
 
     public function coupon_add()
     {
-        $user = Auth::user();
-        return view('admin.coupon-add', compact('user'));
+        return view('admin.coupon-add');
     }
 
     public function coupon_store(Request $request)
@@ -395,9 +386,8 @@ class AdminController extends Controller
 
     public function coupon_edit($id)
     {
-        $user = Auth::user();
         $coupon = Coupon::find($id);
-        return view('admin.coupon-edit', compact('coupon', 'user'));
+        return view('admin.coupon-edit', compact('coupon'));
     }
 
     public function coupon_update(Request $request)
@@ -429,15 +419,13 @@ class AdminController extends Controller
 
     public function slides()
     {
-        $user = Auth::user();
         $slides = Slide::orderBy('id', 'DESC')->paginate(12);
-        return view('admin.slides', compact('slides', 'user'));
+        return view('admin.slides', compact('slides'));
     }
 
     public function slide_add()
     {
-        $user = Auth::user();
-        return view('admin.slide-add', compact('user'));
+        return view('admin.slide-add');
     }
 
     public function slide_store(Request $request)
@@ -479,9 +467,8 @@ class AdminController extends Controller
 
     public function slide_edit($id)
     {
-        $user = Auth::user();
         $slide = Slide::find($id);
-        return view('admin.slide-edit', compact('slide', 'user'));
+        return view('admin.slide-edit', compact('slide'));
     }
 
     public function slide_update(Request $request)
@@ -530,9 +517,8 @@ class AdminController extends Controller
 
     public function contacts()
     {
-        $user = Auth::user();
         $contacts = Contact::orderBy('created_at', 'DESC')->paginate(10);
-        return view('admin.contacts', compact('contacts', 'user'));
+        return view('admin.contacts', compact('contacts'));
     }
 
     public function contact_delete($id)
@@ -544,65 +530,53 @@ class AdminController extends Controller
 
     public function settings()
     {
-        // at this moment, settings table only have one data
-        $user = Auth::user();
-        $setting = Setting::first();
-        return view('admin.settings', compact('setting', 'user'));
+        $selected_user = User::find(Auth::user()->id);
+        return view('admin.settings', compact('selected_user'));
     }
 
     public function setting_update(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
-            'phone' => 'required|numeric|regex:/^[0-9]{10,12}$/',
-            'address' => 'required'
+            'mobile' => 'required|numeric|regex:/^[0-9]{10,12}$/',
+            'name' => 'required|max:255'
         ]);
 
-        // at this moment, settings table only have one data 
-        $setting = Setting::first();
-        if ($setting) {
-            $setting->email = $request->email;
-            $setting->phone = $request->phone;
-            $setting->phone_second = $request->phone_second;
-            $setting->address = $request->address;
-            $setting->map = $request->map;
-            $setting->twitter = $request->twitter;
-            $setting->instagram = $request->instagram;
-            $setting->youtube = $request->youtube;
-            $setting->pinterest = $request->pinterest;
-            $setting->facebook = $request->facebook;
-        } else {
-            $setting = new Setting();
-            $setting->email = $request->email;
-            $setting->phone = $request->phone;
-            $setting->phone_second = $request->phone_second;
-            $setting->address = $request->address;
-            $setting->map = $request->map;
-            $setting->twitter = $request->twitter;
-            $setting->instagram = $request->instagram;
-            $setting->youtube = $request->youtube;
-            $setting->pinterest = $request->pinterest;
-            $setting->facebook = $request->facebook;
+        $user = User::first();
+        $user->email = $request->email;
+        $user->name = $request->name;
+        $user->mobile = $request->mobile;
+
+        if ($request->old_password && $request->new_password) {
+            $request->validate([
+                'old_password' => 'required',
+                'new_password' => 'required|min:8|confirmed',
+            ]);
+
+            if (!Hash::check($request->old_password, Auth::user()->password)) {
+                return back()->withErrors(['old_password' => 'The provided password does not match our records.']);
+            }
+
+            $user->password = Hash::make($request->new_password);
         }
 
-        $setting->save();
-        return redirect()->route('admin.settings')->with('status', 'Setting has been updated successfully!');
+        $user->save();
+
+        return redirect()->route('admin.settings')->with('status', 'Account setting has been updated successfully!');
     }
 
     public function orders()
     {
-        $user = Auth::user();
         $orders = Order::orderBy('created_at', 'DESC')->paginate(12);
-        return view('admin.orders', compact('orders', 'user'));
+        return view('admin.orders', compact('orders'));
     }
 
     public function order_details($order_id)
     {
-        $user = Auth::user();
         $order = Order::find($order_id);
         $orderItems = OrderItem::where('order_id', $order_id)->orderBy('id')->paginate(12);
         $transaction = Transaction::where('order_id', $order_id)->first();
-        return view('admin.order-details', compact('order', 'orderItems', 'transaction', 'user'));
+        return view('admin.order-details', compact('order', 'orderItems', 'transaction'));
     }
 
     public function update_order_status(Request $request)
@@ -634,16 +608,14 @@ class AdminController extends Controller
 
     public function users()
     {
-        $user = Auth::user();
         $selected_users = User::withCount('orders')->orderBy('created_at', 'ASC')->paginate(12);
-        return view('admin.users', compact('selected_users', 'user'));
+        return view('admin.users', compact('selected_users'));
     }
 
     public function user_edit($id)
     {
-        $user = Auth::user();
         $selected_user = User::find($id);
-        return view('admin.user-edit', compact('selected_user', 'user'));
+        return view('admin.user-edit', compact('selected_user'));
     }
 
     public function user_update_role(Request $request)
