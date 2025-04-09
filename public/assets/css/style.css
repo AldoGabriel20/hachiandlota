@@ -3372,6 +3372,9 @@ progress {
 .lh-lg {
   line-height: 2 !important; }
 
+.check-default {
+  color: #777dcc !important; }
+
 .bg-primary {
   background-color: #222222 !important; }
 

@@ -234,7 +234,7 @@
                             aria-labelledby="accordion-heading-price" data-bs-parent="#price-filters">
                             <input class="price-range-slider" type="text" name="price_range" value="" data-slider-min="10000"
                                 data-slider-max="1000000" data-slider-step="5" data-slider-value="[{{ $min_price }},{{ $max_price }}]"
-                                data-currency="$" />
+                                data-currency="Rp." />
                             <div class="price-range__info d-flex align-items-center mt-2">
                                 <div class="me-auto">
                                     <span class="text-secondary">Min Price: </span>
