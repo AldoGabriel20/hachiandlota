@@ -58,10 +58,12 @@ class UserController extends Controller
     public function address_store(Request $request)
     {
         $user_id = Auth::user()->id;
-        $default_exist = Address::where('user_id', $user_id)->where('isDefault', true)->first();
 
+        // remove previous default address if user add new default address  
+        $default_exist = Address::where('user_id', $user_id)->where('isDefault', true)->first();
         if ($default_exist && $request->has('isdefault') && $request->isdefault) {
-            return back()->withErrors(['isdefault' => 'You have another address with default value']);
+            $default_exist->isdefault = false;
+            $default_exist->save();
         }
 
         $request->validate([
@@ -88,10 +90,61 @@ class UserController extends Controller
         $address->user_id = $user_id;
         if (!$request->isdefault) {
             $address->isdefault = false;
+        } else {
+            $address->isdefault = true;
         }
 
         $address->save();
 
         return redirect()->route('user.addresses')->with('status', 'Address has been added successfully!');
+    }
+
+    public function address_edit($id)
+    {
+        $address = Address::find($id);
+        return view('user.address-edit', compact('address'));
+    }
+
+    public function address_update(Request $request)
+    {
+        $user_id = Auth::user()->id;
+
+        // remove previous default address if user add new default address  
+        $default_exist = Address::where('user_id', $user_id)->where('isDefault', true)->first();
+        if ($default_exist && $request->has('isdefault') && $request->isdefault) {
+            $default_exist->isdefault = false;
+            $default_exist->save();
+        }
+
+        $request->validate([
+            'name' => 'required|max:100',
+            'zip' => 'required|numeric|regex:/^[0-9]{4,6}$/',
+            'phone' => 'required|numeric|regex:/^[0-9]{10,12}$/',
+            'state' => 'required',
+            'city' => 'required',
+            'address' => 'required',
+            'locality' => 'required',
+            'landmark' => 'required',
+        ]);
+
+        $address = Address::find($request->id);
+        $address->name = $request->name;
+        $address->phone = $request->phone;
+        $address->state = $request->state;
+        $address->zip = $request->zip;
+        $address->city = $request->city;
+        $address->address = $request->address;
+        $address->locality = $request->locality;
+        $address->landmark = $request->landmark;
+        $address->country = 'Indonesia';
+        $address->user_id = $user_id;
+        if (!$request->isdefault) {
+            $address->isdefault = false;
+        } else {
+            $address->isdefault = true;
+        }
+
+        $address->save();
+        return redirect()->route('user.addresses')->with('status', 'Address has been updated successfully!');
     }
 }

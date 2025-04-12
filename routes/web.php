@@ -55,6 +55,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/account-addresses', [UserController::class, 'addresses'])->name('user.addresses');
     Route::get('/account/address/add', [UserController::class, 'address_add'])->name('user.address.add');
     Route::post('/account/address/store', [UserController::class, 'address_store'])->name('user.address.store');
+    Route::get('/account/address/{id}/edit', [UserController::class, 'address_edit'])->name('user.address.edit');
+    Route::put('/account/address/update', [UserController::class, 'address_update'])->name('user.address.update');
 });
 
 Route::middleware(['auth', AuthAdmin::class])->group(function () {
