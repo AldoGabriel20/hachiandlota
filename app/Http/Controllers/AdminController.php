@@ -542,7 +542,7 @@ class AdminController extends Controller
             'name' => 'required|max:255'
         ]);
 
-        $user = User::first();
+        $user = User::find(Auth::user()->id);
         $user->email = $request->email;
         $user->name = $request->name;
         $user->mobile = $request->mobile;

@@ -14,7 +14,8 @@
         <p>From your account dashboard you can view your <a class="unerline-link"
           href="{{ route('user.orders') }}">recent
           orders</a>, manage your <a class="unerline-link" href="{{ route('user.addresses') }}">shipping
-          addresses</a>, and <a class="unerline-link" href="account_edit.html">edit your password and account
+          addresses</a>, and <a class="unerline-link" href="{{ route('user.details') }}">edit your password and
+          account
           details.</a></p>
       </div>
       </div>

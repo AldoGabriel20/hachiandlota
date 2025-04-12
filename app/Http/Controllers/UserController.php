@@ -7,8 +7,10 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Transaction;
 use App\Models\Address;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -146,5 +148,42 @@ class UserController extends Controller
 
         $address->save();
         return redirect()->route('user.addresses')->with('status', 'Address has been updated successfully!');
+    }
+
+    public function details()
+    {
+        $user = User::find(Auth::user()->id);
+        return view('user.details', compact('user'));
+    }
+
+    public function detail_update(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'mobile' => 'required|numeric|regex:/^[0-9]{10,12}$/',
+            'name' => 'required|max:255'
+        ]);
+
+        $user = User::find(Auth::user()->id);
+        $user->email = $request->email;
+        $user->name = $request->name;
+        $user->mobile = $request->mobile;
+
+        if ($request->old_password && $request->new_password) {
+            $request->validate([
+                'old_password' => 'required',
+                'new_password' => 'required|min:8|confirmed',
+            ]);
+
+            if (!Hash::check($request->old_password, Auth::user()->password)) {
+                return back()->withErrors(['old_password' => 'The provided password does not match our records.']);
+            }
+
+            $user->password = Hash::make($request->new_password);
+        }
+
+        $user->save();
+
+        return redirect()->route('user.details')->with('status', 'Account setting has been updated successfully!');
     }
 }
