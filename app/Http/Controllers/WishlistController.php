@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Surfsidemedia\Shoppingcart\Facades\Cart;
 
 class WishlistController extends Controller
 {
     public function index()
     {
+        if (Session::has('coupon')) {
+            Session::forget('coupon');
+        }
+
         $items = Cart::instance('wishlist')->content();
         return view('wishlist', compact('items'));
     }

@@ -11,11 +11,16 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller
 {
     public function index()
     {
+        if (Session::has('coupon')) {
+            Session::forget('coupon');
+        }
+
         return view('user.index');
     }
 

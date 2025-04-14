@@ -18,6 +18,11 @@ class CartController extends Controller
     public function index()
     {
         $items = Cart::instance('cart')->content();
+
+        if (Auth::check()) {
+            Cart::instance('cart')->store(Auth::user()->email);
+        }
+
         return view('cart', compact('items'));
     }
 
@@ -32,7 +37,23 @@ class CartController extends Controller
         $product = Cart::instance('cart')->get($rowId);
         $qty = $product->qty + 1;
         Cart::instance('cart')->update($rowId, $qty);
-        return redirect()->back()->with('isRefresh', true);
+
+        if (Session::has('coupon')) {
+            $cartSubTotalFloat = floatval(str_replace(',', '', Cart::instance('cart')->subtotal()));
+            $validCoupon = Coupon::where('code', Session::get('coupon')['code'])->where('expiry_date', '>=', Carbon::today())
+                ->where('cart_value', '<=', $cartSubTotalFloat)
+                ->first();
+
+            if ($validCoupon) {
+                $this->calculateDiscount();
+                return redirect()->back()->with('success', 'Coupon has been applied!');
+            } else {
+                Session::forget('coupon');
+                return redirect()->back()->with('error', 'Invalid coupon code!');
+            }
+        }
+
+        return redirect()->back();
     }
 
     public function decrease_cart_quantity($rowId)
@@ -40,7 +61,23 @@ class CartController extends Controller
         $product = Cart::instance('cart')->get($rowId);
         $qty = $product->qty - 1;
         Cart::instance('cart')->update($rowId, $qty);
-        return redirect()->back()->with('isRefresh', true);
+
+        if (Session::has('coupon')) {
+            $cartSubTotalFloat = floatval(str_replace(',', '', Cart::instance('cart')->subtotal()));
+            $validCoupon = Coupon::where('code', Session::get('coupon')['code'])->where('expiry_date', '>=', Carbon::today())
+                ->where('cart_value', '<=', $cartSubTotalFloat)
+                ->first();
+
+            if ($validCoupon) {
+                $this->calculateDiscount();
+                return redirect()->back()->with('success', 'Coupon has been applied!');
+            } else {
+                Session::forget('coupon');
+                return redirect()->back()->with('error', 'Invalid coupon code!');
+            }
+        }
+
+        return redirect()->back();
     }
 
     public function remove_item($rowId)

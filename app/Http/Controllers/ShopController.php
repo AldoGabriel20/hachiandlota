@@ -5,11 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
+use Surfsidemedia\Shoppingcart\Facades\Cart;
 
 class ShopController extends Controller
 {
     public function index(Request $request)
     {
+        if (Session::has('coupon')) {
+            Session::forget('coupon');
+        }
+
         $size = $request->query('size') ? $request->query('size') : 12;
         $o_column = "";
         $o_order = "";
@@ -49,6 +56,12 @@ class ShopController extends Controller
                     ->orWhereBetween('sale_price', [$min_price, $max_price]);
             })
             ->orderBy($o_column, $o_order)->paginate($size);
+
+        if (Auth::check()) {
+            Cart::instance('cart')->store(Auth::user()->email);
+            Cart::instance('wishlist')->store(Auth::user()->email);
+        }
+
         return view('shop', compact('products', 'size', 'order', 'categories', 'f_categories', 'min_price', 'max_price'));
     }
 

@@ -114,7 +114,7 @@
                             </tbody>
                         </table>
                         <div class="cart-table-footer">
-                            @if (!Session::has('coupon') || (Session::has('isRefresh')))
+                            @if (!Session::has('coupon'))
                                 <form action="{{ route('cart.coupon.apply') }}" method="POST" class="position-relative bg-body">
                                     @csrf
                                     <input class="form-control" type="text" name="coupon_code" placeholder="Coupon Code" value="">
